@@ -1,0 +1,2276 @@
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Plano ENEM 2027 • Engenharia Civil UFRJ</title>
+
+  <!-- PWA Meta Tags for Tablet / Android / iPad Standalone App Mode -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="ENEM 2027 UFRJ" />
+  <meta name="theme-color" content="#00C86F" />
+  <link id="pwa-manifest-link" rel="manifest" />
+  <link id="pwa-apple-icon" rel="apple-touch-icon" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            canvas: '#F6F7F9',
+            card: '#FFFFFF',
+            borderline: '#E5E7EB',
+            brand: '#00C86F',
+            brandDark: '#00A85D',
+          },
+          boxShadow: {
+            soft: '0 2px 10px rgba(17, 24, 39, 0.04)',
+            hover: '0 10px 25px rgba(17, 24, 39, 0.08)',
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F1F3F5;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #D1D5DB;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #9CA3AF;
+    }
+    .progress-ring-circle {
+      transition: stroke-dashoffset 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  </style>
+</head>
+<body class="bg-canvas text-gray-900 font-sans antialiased selection:bg-brand selection:text-white">
+
+  <!-- Toast Notification (Never uses alert) -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 hidden transform transition-all duration-300 translate-y-3 opacity-0 pointer-events-none">
+    <div class="bg-gray-900 text-white text-sm font-medium px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2.5 border border-gray-800">
+      <span class="w-2.5 h-2.5 rounded-full bg-brand shrink-0"></span>
+      <span id="toast-msg">Salvo automaticamente</span>
+    </div>
+  </div>
+
+  <!-- Mobile / Tablet Compact Top Bar -->
+  <header class="lg:hidden sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-borderline px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <button id="open-sidebar-btn" aria-label="Abrir Menu" class="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+      <div>
+        <div class="flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-brand"></span>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-gray-500">UFRJ • Eng. Civil</span>
+        </div>
+        <h1 class="text-base font-extrabold text-gray-900 leading-tight">ENEM 2027 Planner</h1>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <span id="mobile-week-badge" class="text-xs font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-full">0%</span>
+    </div>
+  </header>
+
+  <!-- Sidebar Backdrop for Mobile/Tablet Drawer -->
+  <div id="sidebar-backdrop" class="fixed inset-0 bg-black/40 z-30 hidden lg:hidden backdrop-blur-xs"></div>
+
+  <div class="min-h-screen flex">
+    <!-- ===================================================================== -->
+    <!-- LEFT SIDEBAR NAVIGATION (DESCOMPLICA INSPIRED)                        -->
+    <!-- ===================================================================== -->
+    <aside id="sidebar" class="fixed lg:sticky top-0 left-0 z-40 h-screen w-72 bg-white border-r border-borderline flex flex-col justify-between p-5 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-out overflow-y-auto">
+      <div>
+        <!-- Brand Logo & Target -->
+        <div class="flex items-center justify-between mb-5 px-1">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-2xl bg-brand text-white flex flex-col items-center justify-center font-extrabold shadow-xs">
+              <span class="text-[10px] leading-none tracking-tighter">ENEM</span>
+              <span class="text-sm leading-tight">2027</span>
+            </div>
+            <div>
+              <p class="text-sm font-extrabold text-gray-900 leading-tight">Engenharia Civil</p>
+              <p class="text-xs font-semibold text-emerald-600">Meta: UFRJ (Poli)</p>
+            </div>
+          </div>
+          <button id="close-sidebar-btn" class="lg:hidden p-2 rounded-xl text-gray-500 hover:bg-gray-100">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Install App Banner Button (PWA) -->
+        <div class="mb-5">
+          <button id="install-pwa-btn" class="w-full py-2.5 px-3.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 text-xs font-bold transition flex items-center justify-between">
+            <span class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-brand shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+              </svg>
+              <span>Instalar App no Tablet</span>
+            </span>
+            <span class="text-[10px] bg-brand text-white px-2 py-0.5 rounded-full">PWA</span>
+          </button>
+        </div>
+
+        <!-- Navigation Menu (5 Core Tabs) -->
+        <nav class="space-y-1.5" aria-label="Menu Principal">
+          <button data-tab="plano" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition bg-gray-900 text-white shadow-xs">
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <span>Plano de Estudos</span>
+          </button>
+
+          <button data-tab="folhinhas" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition">
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            <span>Folhinhas de Exercícios</span>
+          </button>
+
+          <button data-tab="biblioteca" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition">
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span>Biblioteca de Aulas</span>
+            <span id="nav-count-aulas" class="ml-auto text-xs font-bold bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">0</span>
+          </button>
+
+          <button data-tab="caderno" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition">
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+            </svg>
+            <span>Caderno de Erros</span>
+            <span id="nav-count-erros" class="ml-auto text-xs font-bold bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">0</span>
+          </button>
+
+          <button data-tab="meta-ufrj" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition">
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+            </svg>
+            <span>Meta UFRJ (Eng. Civil)</span>
+          </button>
+        </nav>
+
+        <!-- Daily Routine Quick Guide -->
+        <div class="mt-6 p-3.5 rounded-2xl bg-canvas border border-borderline">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-gray-500">Rotina 2h Líquidas</span>
+            <span class="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">Seg–Sex</span>
+          </div>
+          <p class="text-xs text-gray-600 leading-relaxed">
+            <strong>1h Manhã:</strong> Diagnóstico + Aula (Tablet) + Resumo (Caderno)<br/>
+            <strong>1h Tarde:</strong> Bateria de Exercícios + Refação de Erros
+          </p>
+        </div>
+      </div>
+
+      <!-- Backup JSON & Reset Controls -->
+      <div class="pt-4 mt-4 border-t border-borderline space-y-2">
+        <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400 px-1">Backup & Segurança</p>
+        <div class="grid grid-cols-2 gap-2">
+          <button id="export-backup-btn" class="py-2 px-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold transition flex items-center justify-center gap-1.5" title="Baixar arquivo de segurança">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            <span>Exportar</span>
+          </button>
+          <label class="py-2 px-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold transition flex items-center justify-center gap-1.5 cursor-pointer" title="Restaurar backup JSON">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+            </svg>
+            <span>Importar</span>
+            <input id="import-backup-input" type="file" accept=".json" class="hidden" />
+          </label>
+        </div>
+        <button id="open-reset-modal-btn" class="w-full py-2 px-3 rounded-xl text-xs font-medium text-gray-400 hover:text-red-600 hover:bg-red-50 transition">
+          Restaurar dados iniciais
+        </button>
+      </div>
+    </aside>
+
+    <!-- ===================================================================== -->
+    <!-- MAIN CONTENT WORKSPACE                                                -->
+    <!-- ===================================================================== -->
+    <main class="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 max-w-[1640px] mx-auto">
+
+      <!-- =================================================================== -->
+      <!-- TAB 1: PLANO DE ESTUDOS (KANBAN BOARD)                              -->
+      <!-- =================================================================== -->
+      <section id="tab-plano" class="space-y-5">
+        <!-- Top Header Card -->
+        <div class="bg-white rounded-3xl p-5 sm:p-6 shadow-soft border border-borderline flex flex-col xl:flex-row xl:items-center justify-between gap-5">
+          <div class="flex items-center gap-5">
+            <!-- Circular SVG Progress Ring -->
+            <div class="relative w-20 h-20 shrink-0 flex items-center justify-center">
+              <svg class="w-20 h-20 transform -rotate-90" viewBox="0 0 80 80">
+                <circle cx="40" cy="40" r="34" stroke="#E5E7EB" stroke-width="6.5" fill="transparent" />
+                <circle id="week-ring" class="progress-ring-circle" cx="40" cy="40" r="34" stroke="#00C86F" stroke-width="6.5" stroke-linecap="round" fill="transparent" stroke-dasharray="213.628" stroke-dashoffset="213.628" />
+              </svg>
+              <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <span id="week-ring-percent" class="text-lg font-extrabold text-gray-900 leading-none">0%</span>
+                <span class="text-[10px] font-semibold text-gray-400 mt-0.5">semana</span>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex flex-wrap items-center gap-2 mb-1">
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">Plano de Estudos</h1>
+                <span class="text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full">Base Matemática • Janeiro</span>
+              </div>
+              <p id="active-week-title" class="text-sm text-gray-600 font-medium">
+                Semana 1: Aritmética, Proporcionalidade e Porcentagem
+              </p>
+              <p class="text-xs text-gray-400 mt-1">
+                Toque em qualquer card para abrir o passo a passo, colar links de aulas e ver <strong>Por que cai no ENEM</strong>.
+              </p>
+            </div>
+          </div>
+
+          <!-- Week Selector & Unlock Controls -->
+          <div class="flex flex-wrap items-center gap-2.5">
+            <div id="week-selector-pills" class="inline-flex flex-wrap bg-canvas p-1.5 rounded-2xl border border-borderline gap-1">
+              <!-- Rendered via JS -->
+            </div>
+            <button id="unlock-more-weeks-btn" class="px-3.5 py-2.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold transition">
+              + Liberar Semanas 3 e 4
+            </button>
+            <button id="create-custom-week-btn" class="px-3.5 py-2.5 rounded-2xl bg-white hover:bg-gray-50 text-gray-700 border border-borderline text-xs font-bold transition">
+              + Nova Semana
+            </button>
+          </div>
+        </div>
+
+        <!-- Weekend Free Banner -->
+        <div class="bg-white rounded-2xl px-4 py-3 border border-borderline shadow-soft flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-2.5">
+            <span class="w-8 h-8 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center font-bold text-sm">☀</span>
+            <div>
+              <p class="text-xs sm:text-sm font-bold text-gray-800">Sábado e Domingo Livres (Descanso & Recarga Mental)</p>
+              <p class="text-xs text-gray-500">Foco total de Segunda a Sexta para manter consistência saudável até o 3º ano.</p>
+            </div>
+          </div>
+          <span class="text-xs font-semibold text-teal-700 bg-teal-50 border border-teal-200 px-3 py-1 rounded-full">
+            5 dias de estudo • 2 dias livres
+          </span>
+        </div>
+
+        <!-- 5-Column Kanban Board (Dia 1 Seg to Dia 5 Sex) -->
+        <div id="kanban-board" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 items-start">
+          <!-- Rendered via JS -->
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- TAB 2: FOLHINHAS DE EXERCÍCIOS (INTERACTIVE + DOWNLOAD PDF/PRINT)   -->
+      <!-- =================================================================== -->
+      <section id="tab-folhinhas" class="hidden space-y-6">
+        <div class="bg-white rounded-3xl p-6 shadow-soft border border-borderline flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-brandDark">Prática Ativa • Semanas 1 e 2</span>
+            <h2 class="text-2xl font-extrabold text-gray-900 mt-1">Folhinhas de Exercícios (Estilo ENEM)</h2>
+            <p class="text-sm text-gray-500 mt-1">
+              Resolva direto no tablet com gabarito comentado passo a passo ou baixe a folhinha pronta para imprimir/anotar.
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="downloadWorksheet('all', false)" class="px-4 py-2.5 rounded-2xl bg-gray-900 hover:bg-gray-800 text-white text-xs sm:text-sm font-bold transition flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+              <span>Baixar Apostila Completa (Sem Gabarito)</span>
+            </button>
+            <button onclick="downloadWorksheet('all', true)" class="px-4 py-2.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs sm:text-sm font-bold transition">
+              Baixar com Gabarito Comentado
+            </button>
+          </div>
+        </div>
+
+        <!-- Topic Filter Pills for Worksheets -->
+        <div id="worksheet-topic-filters" class="flex flex-wrap gap-2">
+          <!-- Rendered via JS -->
+        </div>
+
+        <!-- Interactive Questions List -->
+        <div id="worksheet-questions-container" class="space-y-4">
+          <!-- Rendered via JS -->
+        </div>
+
+        <!-- External PDF Lists Saved by User -->
+        <div class="bg-white rounded-3xl p-6 shadow-soft border border-borderline">
+          <h3 class="text-lg font-extrabold text-gray-900 mb-1">Minhas Listas Externas (Drive / PDFs)</h3>
+          <p class="text-xs text-gray-500 mb-4">Guarde aqui links de listas em PDF que você baixar para resolver no Redmi Pad 2.</p>
+
+          <form id="external-pdf-form" class="grid grid-cols-1 md:grid-cols-12 gap-3 mb-4">
+            <input id="pdf-title-input" type="text" required placeholder="Nome da lista (Ex: Lista 20 questões Escala ENEM)" class="md:col-span-5 px-3.5 py-2.5 rounded-xl bg-canvas border border-borderline text-sm focus:outline-none focus:ring-2 focus:ring-brand" />
+            <input id="pdf-url-input" type="url" required placeholder="Cole o link do Google Drive / PDF aqui..." class="md:col-span-5 px-3.5 py-2.5 rounded-xl bg-canvas border border-borderline text-sm focus:outline-none focus:ring-2 focus:ring-brand" />
+            <button type="submit" class="md:col-span-2 py-2.5 px-4 rounded-xl bg-gray-900 hover:bg-gray-800 text-white text-sm font-bold transition">
+              + Salvar Lista
+            </button>
+          </form>
+
+          <div id="external-pdf-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- TAB 3: BIBLIOTECA DE AULAS (VIDEOAULAS HUB)                         -->
+      <!-- =================================================================== -->
+      <section id="tab-biblioteca" class="hidden space-y-6">
+        <div class="bg-white rounded-3xl p-6 shadow-soft border border-borderline">
+          <span class="text-xs font-bold uppercase tracking-wider text-blue-600">Central de Videoaulas</span>
+          <h2 class="text-2xl font-extrabold text-gray-900 mt-1">Biblioteca de Aulas & Playlists</h2>
+          <p class="text-sm text-gray-500 mt-1 mb-5">
+            Salve links das suas videoaulas favoritas do YouTube ou cursinho organizadas por matéria e tipo.
+          </p>
+
+          <!-- Add Videoaula Form -->
+          <form id="library-form" class="grid grid-cols-1 md:grid-cols-12 gap-3 bg-canvas p-4 rounded-2xl border border-borderline">
+            <div class="md:col-span-2">
+              <label class="block text-xs font-bold text-gray-600 mb-1">Matéria</label>
+              <select id="lib-subject" class="w-full px-3 py-2.5 rounded-xl bg-white border border-borderline text-sm font-semibold">
+                <option value="Matemática">Matemática</option>
+                <option value="Física">Física</option>
+                <option value="Química">Química</option>
+                <option value="Redação">Redação</option>
+                <option value="Linguagens">Linguagens</option>
+                <option value="Humanas">Humanas</option>
+              </select>
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-xs font-bold text-gray-600 mb-1">Tipo</label>
+              <select id="lib-tag" class="w-full px-3 py-2.5 rounded-xl bg-white border border-borderline text-sm font-semibold">
+                <option value="Teoria">Teoria</option>
+                <option value="Resolução">Resolução</option>
+                <option value="Revisão">Revisão</option>
+              </select>
+            </div>
+            <div class="md:col-span-3">
+              <label class="block text-xs font-bold text-gray-600 mb-1">Título da Aula</label>
+              <input id="lib-title" type="text" required placeholder="Ex: Escala Cartográfica - Ferretto" class="w-full px-3 py-2.5 rounded-xl bg-white border border-borderline text-sm" />
+            </div>
+            <div class="md:col-span-3">
+              <label class="block text-xs font-bold text-gray-600 mb-1">Link (YouTube / Plataforma)</label>
+              <input id="lib-url" type="url" required placeholder="https://youtube.com/..." class="w-full px-3 py-2.5 rounded-xl bg-white border border-borderline text-sm" />
+            </div>
+            <div class="md:col-span-2 flex items-end">
+              <button type="submit" class="w-full py-2.5 px-4 rounded-xl bg-brand hover:bg-brandDark text-white text-sm font-bold transition shadow-xs">
+                + Adicionar Aula
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Subject Filter Bar -->
+        <div id="library-filters" class="flex flex-wrap gap-2">
+          <!-- Rendered via JS -->
+        </div>
+
+        <!-- Video Cards Grid -->
+        <div id="library-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Rendered via JS -->
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- TAB 4: CADERNO DE ERROS & FÓRMULAS                                  -->
+      <!-- =================================================================== -->
+      <section id="tab-caderno" class="hidden space-y-6">
+        <div class="bg-white rounded-3xl p-6 shadow-soft border border-borderline">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-rose-600">Revisão Ativa Até Outubro</span>
+              <h2 class="text-2xl font-extrabold text-gray-900 mt-1">Caderno de Erros & Fórmulas</h2>
+              <p class="text-sm text-gray-500 mt-1">
+                Registre o motivo de cada erro e a maneira certa de resolver para nunca repetir na prova.
+              </p>
+            </div>
+            <button id="export-errors-btn" class="px-4 py-2.5 rounded-2xl bg-gray-900 hover:bg-gray-800 text-white text-xs sm:text-sm font-bold transition shrink-0">
+              Baixar Resumo de Erros
+            </button>
+          </div>
+
+          <form id="error-form" class="grid grid-cols-1 md:grid-cols-12 gap-3 bg-canvas p-4 rounded-2xl border border-borderline">
+            <div class="md:col-span-3">
+              <label class="block text-xs font-bold text-gray-600 mb-1">Questão / Assunto</label>
+              <input id="err-topic" type="text" required placeholder="Ex: Escala de Volume (ENEM 2022)" class="w-full px-3 py-2.5 rounded-xl bg-white border border-borderline text-sm" />
+            </div>
+            <div class="md:col-span-4">
+              <label class="block text-xs font-bold text-gray-600 mb-1">Por que errei?</label>
+              <input id="err-why" type="text" required placeholder="Ex: Esqueci de elevar a razão ao cubo (k³)" class="w-full px-3 py-2.5 rounded-xl bg-white border border-borderline text-sm" />
+            </div>
+            <div class="md:col-span-3">
+              <label class="block text-xs font-bold text-gray-600 mb-1">Como resolver certo / Fórmula</label>
+              <input id="err-fix" type="text" required placeholder="Ex: V_real = V_desenho × E³ e 1m³ = 1000L" class="w-full px-3 py-2.5 rounded-xl bg-white border border-borderline text-sm" />
+            </div>
+            <div class="md:col-span-2 flex items-end">
+              <button type="submit" class="w-full py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold transition">
+                + Registrar
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div id="errors-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Rendered via JS -->
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- TAB 5: META UFRJ (ENGENHARIA CIVIL - SIMULADOR DE PESOS & TRI)      -->
+      <!-- =================================================================== -->
+      <section id="tab-meta-ufrj" class="hidden space-y-6">
+        <div class="bg-white rounded-3xl p-6 shadow-soft border border-borderline">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-brandDark">Objetivo Final • SISU UFRJ</span>
+              <h2 class="text-2xl font-extrabold text-gray-900 mt-1">Simulador de Nota • Engenharia Civil (UFRJ)</h2>
+              <p class="text-sm text-gray-500 mt-1">
+                Veja como alavancar sua TRI em <strong>Matemática</strong> impacta diretamente sua média ponderada na Escola Politécnica da UFRJ.
+              </p>
+            </div>
+            <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-right shrink-0">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700 block">Média Ponderada Estimada</span>
+              <span id="ufrj-weighted-score" class="text-3xl font-extrabold text-gray-900">745.00</span>
+              <span id="ufrj-status-pill" class="block text-xs font-bold text-emerald-700 mt-0.5">Rumo aos 790+ (Ampla)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Sliders for ENEM Scores -->
+          <div class="lg:col-span-7 bg-white rounded-3xl p-6 shadow-soft border border-borderline space-y-5">
+            <div class="flex items-center justify-between">
+              <h3 class="text-base font-extrabold text-gray-900">Simule suas Notas por Área</h3>
+              <span class="text-xs font-semibold text-gray-400">Pesos padrão UFRJ Eng. Civil</span>
+            </div>
+
+            <div id="score-sliders-container" class="space-y-4">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Strategic Insights for UFRJ Engineering -->
+          <div class="lg:col-span-5 space-y-4">
+            <div class="bg-white rounded-3xl p-6 shadow-soft border border-borderline">
+              <h3 class="text-base font-extrabold text-gray-900 mb-3">Por que focar no Básico de Matemática?</h3>
+              <ul class="space-y-3 text-sm text-gray-600">
+                <li class="flex items-start gap-2.5">
+                  <span class="w-5 h-5 rounded-full bg-amber-100 text-amber-800 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">1</span>
+                  <span><strong>Peso Máximo:</strong> Na Engenharia Civil da UFRJ, Matemática tem peso 4. Cada +40 pontos em Matemática equivale a +160 pontos no somatório!</span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <span class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">2</span>
+                  <span><strong>Coerência TRI:</strong> Acertar todas as questões fáceis (Aritmética, Escala, Regra de Três, Porcentagem) faz sua nota passar de 800+ mesmo errando questões difíceis.</span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <span class="w-5 h-5 rounded-full bg-blue-100 text-blue-800 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">3</span>
+                  <span><strong>Base para Física:</strong> Geometria, vetores (Pitágoras) e proporção destravam metade da prova de Ciências da Natureza.</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="bg-gray-900 text-white rounded-3xl p-6 shadow-soft">
+              <span class="text-xs font-bold uppercase tracking-wider text-brand">Meta Matemática 2027</span>
+              <div class="flex items-baseline justify-between mt-1 mb-2">
+                <span id="math-goal-display" class="text-2xl font-extrabold">820 pts</span>
+                <span class="text-xs text-gray-400">Meta recomendada: 800+</span>
+              </div>
+              <div class="w-full bg-gray-800 rounded-full h-2.5 overflow-hidden">
+                <div id="math-goal-bar" class="bg-brand h-2.5 rounded-full transition-all duration-300" style="width: 82%"></div>
+              </div>
+              <p class="text-xs text-gray-400 mt-3">
+                Continue firme nas 2 horas diárias de janeiro: você está construindo a base que a maioria deixa para cima da hora.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- MODAL 1: CARD DETAILS (CHECKLIST + POR QUE CAI + LINKS DE AULAS)        -->
+  <!-- ======================================================================= -->
+  <div id="card-detail-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-borderline p-6 sm:p-7">
+      <!-- Top Header -->
+      <div class="flex items-start justify-between gap-4 mb-4">
+        <div>
+          <div class="flex items-center gap-2 mb-1.5">
+            <span id="modal-tag-pill" class="px-2.5 py-0.5 rounded-lg text-[11px] font-bold uppercase tracking-wider bg-amber-50 text-amber-800">MATEMÁTICA</span>
+            <span id="modal-day-subtitle" class="text-xs font-semibold text-gray-400">Dia 1 • Segunda-feira</span>
+          </div>
+          <h3 id="modal-card-title" class="text-xl font-extrabold text-gray-900 leading-snug">Título do Tópico</h3>
+        </div>
+        <button id="close-detail-modal-btn" class="p-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-600 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Por que cai no ENEM -->
+      <div id="modal-why-container" class="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/70 mb-5">
+        <p class="text-xs font-extrabold uppercase tracking-wider text-amber-800 mb-1">Por que cai no ENEM (Estratégia TRI)</p>
+        <p id="modal-why-body" class="text-sm text-gray-800 leading-relaxed"></p>
+      </div>
+
+      <!-- 4-Step Interactive Checklist -->
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-2.5">
+          <span class="text-xs font-extrabold uppercase tracking-wider text-gray-500">Roteiro de Estudo (Marque ao concluir)</span>
+          <span id="modal-steps-progress" class="text-xs font-bold text-emerald-600">0/4 passos</span>
+        </div>
+        <div id="modal-steps-container" class="space-y-2">
+          <!-- Checkboxes rendered via JS -->
+        </div>
+      </div>
+
+      <!-- Links de Aulas & Materiais right inside the card -->
+      <div class="mb-6 p-4 rounded-2xl bg-canvas border border-borderline">
+        <div class="flex items-center justify-between mb-2.5">
+          <span class="text-xs font-extrabold uppercase tracking-wider text-gray-700">Links de Videoaulas & Listas PDF</span>
+          <span class="text-[11px] text-gray-400">Abre direto no tablet</span>
+        </div>
+
+        <form id="card-add-link-form" class="grid grid-cols-1 sm:grid-cols-12 gap-2 mb-3">
+          <input id="card-link-title" type="text" required placeholder="Nome (Ex: Aula Ferretto)" class="sm:col-span-5 px-3 py-2 rounded-xl bg-white border border-borderline text-xs font-medium" />
+          <input id="card-link-url" type="url" required placeholder="Cole a URL (https://...)" class="sm:col-span-5 px-3 py-2 rounded-xl bg-white border border-borderline text-xs" />
+          <button type="submit" class="sm:col-span-2 py-2 px-3 rounded-xl bg-gray-900 hover:bg-gray-800 text-white text-xs font-bold transition">
+            + Link
+          </button>
+        </form>
+
+        <div id="card-links-list" class="space-y-2">
+          <!-- Saved links rendered via JS -->
+        </div>
+      </div>
+
+      <!-- Personal Notes -->
+      <div class="mb-6">
+        <label for="modal-notes-textarea" class="block text-xs font-extrabold uppercase tracking-wider text-gray-500 mb-1.5">
+          Anotações Pessoais / Desempenho nos Exercícios
+        </label>
+        <textarea id="modal-notes-textarea" rows="2" placeholder="Ex: Acertei 13/15 na lista. Resumo feito na página 4 do caderno." class="w-full px-3.5 py-2.5 rounded-2xl bg-canvas border border-borderline text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand"></textarea>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-borderline">
+        <button id="delete-card-btn" class="hidden px-3.5 py-2.5 rounded-xl text-xs font-bold text-red-600 hover:bg-red-50 transition">
+          Excluir Card
+        </button>
+        <div class="flex items-center gap-2 ml-auto">
+          <button id="complete-all-steps-btn" class="px-4 py-2.5 rounded-xl bg-brand hover:bg-brandDark text-white text-xs sm:text-sm font-bold transition">
+            Concluir Todos os Passos
+          </button>
+          <button id="save-close-detail-btn" class="px-5 py-2.5 rounded-xl bg-gray-900 hover:bg-gray-800 text-white text-xs sm:text-sm font-bold transition">
+            Fechar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- MODAL 2: ADD CUSTOM TASK TO A DAY                                       -->
+  <!-- ======================================================================= -->
+  <div id="add-task-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+    <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-borderline p-6">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <span id="add-task-day-badge" class="text-xs font-bold uppercase tracking-wider text-brandDark">Dia 1 • Segunda</span>
+          <h3 class="text-lg font-extrabold text-gray-900">Adicionar Tarefa no Dia</h3>
+        </div>
+        <button id="close-add-task-btn" class="p-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-600">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <form id="add-task-form" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">Matéria / Categoria</label>
+          <select id="task-category-select" class="w-full px-3.5 py-2.5 rounded-xl bg-canvas border border-borderline text-sm font-semibold">
+            <option value="MATEMÁTICA">Matemática (Âmbar)</option>
+            <option value="ACADEMIA / ROTINA">Academia / Rotina (Verde-Água)</option>
+            <option value="FÍSICA">Física (Azul)</option>
+            <option value="REDAÇÃO">Redação (Roxo)</option>
+            <option value="REVISÃO">Revisão (Rosa)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">Título do Card</label>
+          <input id="task-title-input" type="text" required placeholder="Ex: Academia (Treino A) ou Redação Semanal" class="w-full px-3.5 py-2.5 rounded-xl bg-canvas border border-borderline text-sm" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">Descrição / Meta do Bloco</label>
+          <input id="task-desc-input" type="text" placeholder="Ex: 50 min de treino + 10 min alongamento" class="w-full px-3.5 py-2.5 rounded-xl bg-canvas border border-borderline text-sm" />
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" id="cancel-add-task-btn" class="px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100">Cancelar</button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-gray-900 hover:bg-gray-800 text-white text-sm font-bold">Adicionar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- MODAL 3: PWA INSTALL INSTRUCTIONS                                       -->
+  <!-- ======================================================================= -->
+  <div id="pwa-help-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+    <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-borderline p-6">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-extrabold text-gray-900">Como instalar como App no Tablet</h3>
+        <button id="close-pwa-help-btn" class="p-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-600">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <p class="text-sm text-gray-600 mb-4">
+        Este site já está configurado como <strong>Aplicativo Web Progressivo (PWA)</strong>. Para abrir em tela cheia sem barra de navegador no seu Redmi Pad 2:
+      </p>
+      <ol class="space-y-2.5 text-sm text-gray-700 bg-canvas p-4 rounded-2xl border border-borderline mb-5">
+        <li><strong>1.</strong> Abra seu link publicado no <strong>Google Chrome</strong> do tablet.</li>
+        <li><strong>2.</strong> Toque no menu de <strong>três pontinhos (⋮)</strong> no canto superior direito.</li>
+        <li><strong>3.</strong> Selecione <strong>"Instalar aplicativo"</strong> ou <strong>"Adicionar à tela inicial"</strong>.</li>
+        <li><strong>4.</strong> Pronto! O ícone verde <strong>ENEM 2027</strong> aparecerá junto com seus outros apps.</li>
+      </ol>
+      <button id="ok-pwa-help-btn" class="w-full py-2.5 rounded-xl bg-gray-900 text-white text-sm font-bold">Entendi!</button>
+    </div>
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- MODAL 4: CONFIRM RESET (REPLACES window.confirm)                        -->
+  <!-- ======================================================================= -->
+  <div id="reset-confirm-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+    <div class="bg-white rounded-3xl max-w-sm w-full shadow-2xl border border-borderline p-6 text-center">
+      <h3 class="text-lg font-extrabold text-gray-900">Restaurar dados iniciais?</h3>
+      <p class="text-sm text-gray-500 mt-1 mb-5">Dica: clique em "Exportar" antes se quiser guardar um backup do seu progresso atual.</p>
+      <div class="flex gap-2.5">
+        <button id="cancel-reset-btn" class="flex-1 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-sm font-bold text-gray-700">Cancelar</button>
+        <button id="confirm-reset-btn" class="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-sm font-bold text-white">Restaurar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * ==========================================================================
+     * 1. DYNAMIC PWA MANIFEST & INSTALL PROMPT SETUP
+     * ==========================================================================
+     */
+    (function setupPWA() {
+      const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+        <rect width="512" height="512" rx="112" fill="#00C86F"/>
+        <text x="50%" y="44%" dominant-baseline="middle" text-anchor="middle" fill="#FFFFFF" font-family="Inter, sans-serif" font-weight="800" font-size="96">ENEM</text>
+        <text x="50%" y="66%" dominant-baseline="middle" text-anchor="middle" fill="#FFFFFF" font-family="Inter, sans-serif" font-weight="800" font-size="112">2027</text>
+      </svg>`;
+      const iconDataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgIcon);
+
+      const appleIcon = document.getElementById('pwa-apple-icon');
+      if (appleIcon) appleIcon.href = iconDataUrl;
+
+      const manifestObj = {
+        name: 'Plano de Estudos ENEM 2027 • Engenharia Civil UFRJ',
+        short_name: 'ENEM 2027',
+        description: 'Cronograma interativo, folhinhas de exercícios e controle TRI para Engenharia Civil UFRJ.',
+        start_url: '.',
+        display: 'standalone',
+        background_color: '#F6F7F9',
+        theme_color: '#00C86F',
+        icons: [
+          {
+            src: iconDataUrl,
+            sizes: '512x512',
+            type: 'image/svg+xml',
+            purpose: 'any maskable'
+          }
+        ]
+      };
+
+      try {
+        const blob = new Blob([JSON.stringify(manifestObj)], { type: 'application/manifest+json' });
+        const manifestUrl = URL.createObjectURL(blob);
+        document.getElementById('pwa-manifest-link').setAttribute('href', manifestUrl);
+      } catch (e) {
+        console.warn('Manifest blob fallback:', e);
+      }
+    })();
+
+    let deferredInstallPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+    });
+
+    /**
+     * ==========================================================================
+     * 2. CURRICULUM DATA & CURATED ENEM WORKSHEETS
+     * ==========================================================================
+     */
+    const STORAGE_KEY = 'enem_2027_ufrj_pwa_state_v2';
+
+    function createFourSteps(step1, step2, step3, step4) {
+      return [
+        { id: 's1-' + Math.random().toString(36).slice(2, 8), text: `1º Passo: Diagnóstico — ${step1}`, done: false },
+        { id: 's2-' + Math.random().toString(36).slice(2, 8), text: `2º Passo: Teoria (Tablet) + Resumo prático (Caderno) — ${step2}`, done: false },
+        { id: 's3-' + Math.random().toString(36).slice(2, 8), text: `3º Passo: Prática (Bateria de exercícios) — ${step3}`, done: false },
+        { id: 's4-' + Math.random().toString(36).slice(2, 8), text: `4º Passo: Revisão e refação dos erros — ${step4}`, done: false }
+      ];
+    }
+
+    function getInitialWeeks() {
+      return [
+        {
+          id: 1,
+          label: 'Semana 1',
+          title: 'Semana 1: Aritmética, Proporcionalidade e Porcentagem',
+          days: [
+            {
+              id: 'dia-1',
+              dayName: 'Dia 1 (Seg)',
+              cards: [
+                {
+                  id: 'c-dia1-1',
+                  tag: 'MATEMÁTICA',
+                  title: 'Operações Básicas, Potenciação e Radiciação',
+                  whyEnem: 'São a base de absolutamente todas as questões. Errar conta simples derruba a sua TRI mesmo quando você sabe a fórmula.',
+                  steps: createFourSteps(
+                    'Resolver 3 questões básicas de expressões numéricas e potências antes da aula.',
+                    'Assistir à videoaula de propriedades de potência e raiz e anotar as regras principais no caderno.',
+                    'Resolver 15 exercícios de simplificação e expressões sem usar calculadora.',
+                    'Refazer do zero as questões que você errou ou demorou muito para resolver.'
+                  ),
+                  links: [],
+                  notes: ''
+                }
+              ]
+            },
+            {
+              id: 'dia-2',
+              dayName: 'Dia 2 (Ter)',
+              cards: [
+                {
+                  id: 'c-dia2-1',
+                  tag: 'MATEMÁTICA',
+                  title: 'Frações, Decimais e Conversão de Unidades',
+                  whyEnem: 'A prova exige transformação constante (metros para centímetros, litros para m³, horas para minutos) e operações com decimais em problemas cotidianos.',
+                  steps: createFourSteps(
+                    'Tentar resolver 3 problemas envolvendo transformação de unidades e frações.',
+                    'Assistir à aula e montar uma tabela prática de conversão (comprimento, área, volume e tempo) no caderno.',
+                    'Fazer 15 exercícios focados em operações com frações e escala/conversão.',
+                    'Reler sua tabela de conversões e corrigir os erros da lista.'
+                  ),
+                  links: [],
+                  notes: ''
+                }
+              ]
+            },
+            {
+              id: 'dia-3',
+              dayName: 'Dia 3 (Qua)',
+              cards: [
+                {
+                  id: 'c-dia3-1',
+                  tag: 'MATEMÁTICA',
+                  title: 'Razão, Proporção e Escala Cartográfica',
+                  whyEnem: 'É um dos 3 assuntos mais cobrados da prova inteira. Aparece todo ano em questões de mapas, maquetes e divisão proporcional.',
+                  steps: createFourSteps(
+                    'Fazer 3 questões antigas do ENEM sobre escala antes da teoria.',
+                    'Estudar a relação entre escala linear, de área (k²) e de volume (k³); escrever o passo a passo no caderno.',
+                    'Resolver 15 exercícios (misturando listas de fixação e questões do ENEM).',
+                    'Revisar o resumo escrito e anotar as pegadinhas de unidade de medida (ex: cm para km).'
+                  ),
+                  links: [],
+                  notes: ''
+                }
+              ]
+            },
+            {
+              id: 'dia-4',
+              dayName: 'Dia 4 (Qui)',
+              cards: [
+                {
+                  id: 'c-dia4-1',
+                  tag: 'MATEMÁTICA',
+                  title: 'Regra de Três Simples e Composta',
+                  whyEnem: 'Resolve cerca de 30% a 40% das questões de Matemática e Física da prova sem precisar decorar fórmulas complexas.',
+                  steps: createFourSteps(
+                    'Resolver 3 problemas de grandezas direta e inversamente proporcionais.',
+                    'Assistir à aula focando em como identificar grandezas inversas; criar um esquema prático no caderno.',
+                    'Resolver 20 exercícios variados de regra de três simples e composta.',
+                    'Refazer os exercícios em que você inverteu a proporção.'
+                  ),
+                  links: [],
+                  notes: ''
+                }
+              ]
+            },
+            {
+              id: 'dia-5',
+              dayName: 'Dia 5 (Sex)',
+              cards: [
+                {
+                  id: 'c-dia5-1',
+                  tag: 'MATEMÁTICA',
+                  title: 'Porcentagem e Matemática Financeira Básica',
+                  whyEnem: 'Presença garantida em gráficos, tabelas, aumentos, descontos sucessivos e juros simples.',
+                  steps: createFourSteps(
+                    'Fazer 3 questões envolvendo aumento e desconto percentual.',
+                    'Estudar fator de multiplicação (ex: aumentar 15% = multiplicar por 1,15); registrar exemplos no caderno.',
+                    'Resolver 15 exercícios de porcentagem aplicada a gráficos e finanças.',
+                    'Revisão Geral da Semana: reler todos os resumos de Seg a Sex e refazer 5 questões erradas.'
+                  ),
+                  links: [],
+                  notes: ''
+                }
+              ]
+            }
+          ]
+        },
+        {
+          id: 2,
+          label: 'Semana 2',
+          title: 'Semana 2: Álgebra Inicial & Geometria Plana Fundamental',
+          days: [
+            {
+              id: 'dia-6',
+              dayName: 'Dia 6 (Seg)',
+              cards: [
+                {
+                  id: 'c-dia6-1',
+                  tag: 'MATEMÁTICA',
+                  title: 'Equação do 1º Grau e Sistemas Lineares',
+                  whyEnem: 'O ENEM adora problemas contextualizados onde você precisa montar duas equações para descobrir dois valores desconhecidos.',
+                  steps: createFourSteps(
+                    'Tentar montar e resolver 3 problemas de texto que viram equações.',
+                    'Assistir à aula de interpretação algébrica e resolução de sistemas (adição e substituição); resumir no caderno.',
+                    'Resolver 15 exercícios de interpretação de texto para linguagem matemática.',
+                    'Revisar a montagem das equações nas questões em que houve dúvida.'
+                  ),
+                  links: [],
+                  notes: ''
+                }
+              ]
+            },
+            {
+              id: 'dia-7',
+              dayName: 'Dia 7 (Ter)',
+              cards: [
+                {
+                  id: 'c-dia7-1',
+                  tag: 'MATEMÁTICA',
+                  title: 'Equação do 2º Grau (Fatoração e Bhaskara)',
+                  whyEnem: 'Essencial para encontrar pontos de máximo, mínimo e raízes em problemas de área e lançamento (Física).',
+                  steps: createFourSteps(
+                    'Resolver 3 equações do 2º grau (completas e incompletas).',
+                    'Revisar fórmula de Bhaskara, Soma e Produto e fatoração; anotar os atalhos para equações incompletas.',
+                    'Fazer 15 exercícios (10 de cálculo direto e 5 problemas contextualizados).',
+                    'Conferir sinais e refazer os erros.'
+                  ),
+                  links: [],
+                  notes: ''
+                }
+              ]
+            },
+            {
+              id: 'dia-8',
+              dayName: 'Dia 8 (Qua)',
+              cards: [
+                {
+                  id: 'c-dia8-1',
+                  tag: 'MATEMÁTICA',
+                  title: 'Geometria Plana: Triângulos e Teorema de Pitágoras',
+                  whyEnem: 'Base da geometria e da física (decomposição de vetores). Pitágoras e semelhança de triângulos caem todos os anos.',
+                  steps: createFourSteps(
+                    'Resolver 3 questões envolvendo triângulos retângulos e semelhança.',
+                    'Estudar classificação de triângulos, Pitágoras e triângulos pitagóricos (3-4-5, 5-12-13); desenhar modelos no caderno.',
+                    'Resolver 15 exercícios focados em encontrar medidas desconhecidas.',
+                    'Revisar os desenhos e as relações métricas anotadas.'
+                  ),
+                  links: [],
+                  notes: ''
+                }
+              ]
+            },
+            {
+              id: 'dia-9',
+              dayName: 'Dia 9 (Qui)',
+              cards: [
+                {
+                  id: 'c-dia9-1',
+                  tag: 'MATEMÁTICA',
+                  title: 'Geometria Plana: Áreas e Perímetros',
+                  whyEnem: 'Questões de cálculo de piso, tinta, terrenos e reforma aparecem em toda edição da prova.',
+                  steps: createFourSteps(
+                    'Tentar calcular a área de 3 figuras compostas antes da aula.',
+                    'Assistir à aula e criar um formulário visual no caderno (quadrado, retângulo, triângulo, trapézio, losango e círculo).',
+                    'Resolver 15 questões do ENEM sobre cálculo de áreas.',
+                    'Testar sua memória tentando escrever todas as fórmulas de área em uma folha em branco sem olhar o caderno.'
+                  ),
+                  links: [],
+                  notes: ''
+                }
+              ]
+            },
+            {
+              id: 'dia-10',
+              dayName: 'Dia 10 (Sex)',
+              cards: [
+                {
+                  id: 'c-dia10-1',
+                  tag: 'REVISÃO',
+                  title: 'Consolidação e Simulado Diagnóstico da Quinzena',
+                  whyEnem: 'Medir sua evolução real desde o Dia 1 e garantir que o conteúdo de janeiro não seja esquecido até outubro.',
+                  steps: [
+                    { id: 'd10-s1', text: '1º Passo: Revisão Ativa — Reler todos os resumos escritos das duas semanas (cerca de 30 minutos).', done: false },
+                    { id: 'd10-s2', text: '2º Passo: Mini-Simulado — Resolver 15 questões reais do ENEM abrangendo Semanas 1 e 2 (3 min por questão).', done: false },
+                    { id: 'd10-s3', text: '3º Passo: Análise de Erros — Classificar cada erro (atenção, conta ou teoria) no Caderno de Erros.', done: false }
+                  ],
+                  links: [],
+                  notes: ''
+                }
+              ]
+            }
+          ]
+        }
+      ];
+    }
+
+    function getWeeks3And4() {
+      return [
+        {
+          id: 3,
+          label: 'Semana 3',
+          title: 'Semana 3: Geometria Espacial Básica & Estatística',
+          days: [
+            {
+              id: 'dia-11',
+              dayName: 'Dia 11 (Seg)',
+              cards: [{
+                id: 'c-dia11-1',
+                tag: 'MATEMÁTICA',
+                title: 'Prismas e Cubos: Área Total e Volume',
+                whyEnem: 'Questões de caixas d’água, embalagens e obras civis aparecem todo ano.',
+                steps: createFourSteps('3 questões de volume de cubo/paralelepípedo.', 'Fórmulas V = Ab × h e planificação.', '15 exercícios de prismas.', 'Refazer erros de conversão m³ ↔ Litros.'),
+                links: [],
+                notes: ''
+              }]
+            },
+            {
+              id: 'dia-12',
+              dayName: 'Dia 12 (Ter)',
+              cards: [{
+                id: 'c-dia12-1',
+                tag: 'MATEMÁTICA',
+                title: 'Cilindros e Reservatórios',
+                whyEnem: 'Sólido campeão de cobrança em problemas de capacidade e vazão.',
+                steps: createFourSteps('3 questões de cilindro reto.', 'Área lateral (2πrh) e Volume (πr²h).', '15 exercícios ENEM de cilindros.', 'Revisar aproximações de π.'),
+                links: [],
+                notes: ''
+              }]
+            },
+            {
+              id: 'dia-13',
+              dayName: 'Dia 13 (Qua)',
+              cards: [{
+                id: 'c-dia13-1',
+                tag: 'MATEMÁTICA',
+                title: 'Estatística: Média Aritmética e Ponderada',
+                whyEnem: 'Questões fáceis/médias de altíssimo valor na TRI.',
+                steps: createFourSteps('3 problemas de média em tabelas.', 'Diferença entre média simples e ponderada.', '15 questões de médias.', 'Revisar erros de soma dos pesos.'),
+                links: [],
+                notes: ''
+              }]
+            },
+            {
+              id: 'dia-14',
+              dayName: 'Dia 14 (Qui)',
+              cards: [{
+                id: 'c-dia14-1',
+                tag: 'MATEMÁTICA',
+                title: 'Moda, Mediana e Amplitude',
+                whyEnem: 'Presença obrigatória todo ano; exige atenção para ordenar o rol.',
+                steps: createFourSteps('3 questões de mediana em tabelas.', 'Regra da mediana par e ímpar.', '15 questões ENEM de tendência central.', 'Revisar resumos no caderno.'),
+                links: [],
+                notes: ''
+              }]
+            },
+            {
+              id: 'dia-15',
+              dayName: 'Dia 15 (Sex)',
+              cards: [{
+                id: 'c-dia15-1',
+                tag: 'REVISÃO',
+                title: 'Revisão Semana 3: Espacial + Estatística',
+                whyEnem: 'Fixação semanal antes do descanso de fim de semana.',
+                steps: createFourSteps('Reler resumos da semana.', 'Revisar fórmulas de volume.', '12 questões mistas ENEM.', 'Anotar erros no Caderno de Erros.'),
+                links: [],
+                notes: ''
+              }]
+            }
+          ]
+        },
+        {
+          id: 4,
+          label: 'Semana 4',
+          title: 'Semana 4: Gráficos, Tabelas e Função Afim (1º Grau)',
+          days: [
+            {
+              id: 'dia-16',
+              dayName: 'Dia 16 (Seg)',
+              cards: [{
+                id: 'c-dia16-1',
+                tag: 'MATEMÁTICA',
+                title: 'Análise de Gráficos e Tabelas',
+                whyEnem: 'Quase um quarto da prova envolve leitura rápida de gráficos.',
+                steps: createFourSteps('3 questões de interpretação de gráficos.', 'Checklist: título, eixos X/Y e unidades.', '15 questões de gráficos ENEM.', 'Refazer questões com pegadinha de escala.'),
+                links: [],
+                notes: ''
+              }]
+            },
+            {
+              id: 'dia-17',
+              dayName: 'Dia 17 (Ter)',
+              cards: [{
+                id: 'c-dia17-1',
+                tag: 'MATEMÁTICA',
+                title: 'Plano Cartesiano e Conceito de Função',
+                whyEnem: 'Base para leitura gráfica em Matemática, Física e Química.',
+                steps: createFourSteps('3 questões de coordenadas e domínio/imagem.', 'Par ordenado (x,y) e lei de formação.', '15 exercícios de funções.', 'Revisar anotações.'),
+                links: [],
+                notes: ''
+              }]
+            },
+            {
+              id: 'dia-18',
+              dayName: 'Dia 18 (Qua)',
+              cards: [{
+                id: 'c-dia18-1',
+                tag: 'MATEMÁTICA',
+                title: 'Função Afim: f(x) = ax + b',
+                whyEnem: 'Modela tarifas, corridas, contas e crescimento constante.',
+                steps: createFourSteps('3 problemas de valor fixo + variável.', 'Coeficiente angular (a) e linear (b).', '15 exercícios contextualizados.', 'Revisar montagem da lei f(x).'),
+                links: [],
+                notes: ''
+              }]
+            },
+            {
+              id: 'dia-19',
+              dayName: 'Dia 19 (Qui)',
+              cards: [{
+                id: 'c-dia19-1',
+                tag: 'MATEMÁTICA',
+                title: 'Gráfico da Função Afim e Zero da Função',
+                whyEnem: 'Encontrar a equação da reta pelo gráfico cai todos os anos.',
+                steps: createFourSteps('3 questões de gráfico de reta.', 'Reta crescente/decrescente e raiz (-b/a).', '15 questões ENEM.', 'Revisar interseção de retas.'),
+                links: [],
+                notes: ''
+              }]
+            },
+            {
+              id: 'dia-20',
+              dayName: 'Dia 20 (Sex)',
+              cards: [{
+                id: 'c-dia20-1',
+                tag: 'REVISÃO',
+                title: 'Simulado Geral de Fechamento de Janeiro',
+                whyEnem: 'Consolidar todo o 1º mês antes de iniciar o ritmo da escola.',
+                steps: createFourSteps('Reler resumos das 4 semanas.', 'Simulado de 20 questões ENEM (1h).', 'Corrigir e classificar erros.', 'Planejar Fevereiro.'),
+                links: [],
+                notes: ''
+              }]
+            }
+          ]
+        }
+      ];
+    }
+
+    // Curated ENEM-Style Practice Questions for "Folhinhas de Exercícios"
+    const WORKSHEET_QUESTIONS = [
+      {
+        id: 'q1',
+        topic: 'Potenciação e Radiciação',
+        week: 'Semana 1 • Dia 1',
+        statement: 'Um engenheiro civil analisou a resistência de um novo lote de concreto em laboratório. Em um teste de compressão, a carga suportada foi expressa por (2³ · 4²) / 2⁴ toneladas. Qual é o valor exato dessa carga em toneladas?',
+        options: ['2 toneladas', '4 toneladas', '8 toneladas', '16 toneladas', '32 toneladas'],
+        correctIndex: 2,
+        solution: 'Passo 1: Reescreva 4² na base 2 → 4² = (2²)² = 2⁴.\nPasso 2: Substitua na expressão: (2³ · 2⁴) / 2⁴.\nPasso 3: Simplifique 2⁴ no numerador e denominador, sobrando 2³ = 8 toneladas.'
+      },
+      {
+        id: 'q2',
+        topic: 'Frações e Conversão de Unidades',
+        week: 'Semana 1 • Dia 2',
+        statement: 'Para concretar a laje de uma residência, uma obra precisa de 4,5 m³ de concreto. Sabendo que cada saco de aditivo líquido contém 750 mL e que são necessários 2 litros do aditivo para cada metro cúbico de concreto, quantos sacos fechados desse aditivo devem ser comprados?',
+        options: ['6 sacos', '9 sacos', '10 sacos', '12 sacos', '15 sacos'],
+        correctIndex: 3,
+        solution: 'Passo 1: Volume total de aditivo = 4,5 m³ × 2 L/m³ = 9 litros.\nPasso 2: Converta 9 litros para mL → 9 × 1.000 = 9.000 mL.\nPasso 3: Divida pela capacidade de cada saco: 9.000 ÷ 750 = 12 sacos.'
+      },
+      {
+        id: 'q3',
+        topic: 'Razão e Escala Cartográfica',
+        week: 'Semana 1 • Dia 3',
+        statement: 'Na planta baixa de um terreno desenhada na escala 1 : 200, uma sala retangular possui dimensões de 3 cm por 4 cm. Qual é a área real dessa sala em metros quadrados (m²)?',
+        options: ['12 m²', '24 m²', '48 m²', '240 m²', '480 m²'],
+        correctIndex: 2,
+        solution: 'Passo 1: Converta cada lado para o tamanho real:\n• Largura real = 3 cm × 200 = 600 cm = 6 m.\n• Comprimento real = 4 cm × 200 = 800 cm = 8 m.\nPasso 2: Área real = 6 m × 8 m = 48 m².\n(Lembrete: na área, multiplicamos pela escala ao quadrado: 12 cm² × 200² = 480.000 cm² = 48 m²).'
+      },
+      {
+        id: 'q4',
+        topic: 'Regra de Três Composta',
+        week: 'Semana 1 • Dia 4',
+        statement: 'Em uma obra da prefeitura, 6 operários trabalhando 8 horas por dia constroem um muro de 48 metros em 4 dias. Mantendo o mesmo ritmo, quantos dias serão necessários para 8 operários, trabalhando 6 horas por dia, construírem um muro de 72 metros?',
+        options: ['4 dias', '5 dias', '6 dias', '8 dias', '9 dias'],
+        correctIndex: 2,
+        solution: 'Monte a proporção isolando Dias (4/x):\n• Operários (inversa): 8/6\n• Horas/dia (inversa): 6/8\n• Muro em metros (direta): 48/72\nMultiplique: 4/x = (8/6) · (6/8) · (48/72) → 4/x = 1 · (2/3) → 2x = 12 → x = 6 dias.'
+      },
+      {
+        id: 'q5',
+        topic: 'Porcentagem',
+        week: 'Semana 1 • Dia 5',
+        statement: 'O preço do saco de cimento sofreu um aumento de 20% em janeiro e, em fevereiro, teve um desconto de 10% para pagamento à vista. Em relação ao preço original antes de janeiro, o valor final em fevereiro representa:',
+        options: ['Aumento de 10%', 'Aumento de 8%', 'Desconto de 8%', 'Aumento de 12%', 'Mesmo preço original'],
+        correctIndex: 1,
+        solution: 'Use fatores de multiplicação:\n• Aumento de 20% = × 1,20\n• Desconto de 10% = × 0,90\nFator acumulado = 1,20 × 0,90 = 1,08 → Isso representa um aumento líquido de 8%.'
+      },
+      {
+        id: 'q6',
+        topic: 'Equação do 1º Grau e Sistemas',
+        week: 'Semana 2 • Dia 6',
+        statement: 'Um depósito de materiais vendeu 30 barras de ferro, sendo algumas de 8 mm e outras de 10 mm, totalizando R$ 1.380,00. Sabendo que cada barra de 8 mm custa R$ 40,00 e cada barra de 10 mm custa R$ 55,00, quantas barras de 10 mm foram vendidas?',
+        options: ['10 barras', '12 barras', '15 barras', '18 barras', '20 barras'],
+        correctIndex: 1,
+        solution: 'Monte o sistema:\n1) x + y = 30 → x = 30 - y\n2) 40x + 55y = 1380\nSubstitua x: 40(30 - y) + 55y = 1380 → 1200 - 40y + 55y = 1380 → 15y = 180 → y = 12 barras de 10 mm.'
+      },
+      {
+        id: 'q7',
+        topic: 'Triângulos e Teorema de Pitágoras',
+        week: 'Semana 2 • Dia 8',
+        statement: 'Uma rampa de acessibilidade retilínea vence um desnível vertical de 1,5 metro e possui projeção horizontal de 2,0 metros no solo. Qual é o comprimento total inclinado dessa rampa?',
+        options: ['2,2 metros', '2,5 metros', '3,0 metros', '3,5 metros', '4,0 metros'],
+        correctIndex: 1,
+        solution: 'Reconheça o triângulo pitagórico 3-4-5 dividido por 2:\n• Catetos: 1,5 m (3 × 0,5) e 2,0 m (4 × 0,5).\n• Hipotenusa: 5 × 0,5 = 2,5 metros.\nOu por Pitágoras: L² = 1,5² + 2,0² = 2,25 + 4,00 = 6,25 → L = 2,5 m.'
+      },
+      {
+        id: 'q8',
+        topic: 'Áreas e Perímetros',
+        week: 'Semana 2 • Dia 9',
+        statement: 'Um terreno tem formato de trapézio retângulo com base maior medindo 20 m, base menor medindo 14 m e altura igual a 10 m. Se o metro quadrado desse terreno custa R$ 500,00, qual é o valor total do lote?',
+        options: ['R$ 70.000,00', 'R$ 85.000,00', 'R$ 95.000,00', 'R$ 140.000,00', 'R$ 170.000,00'],
+        correctIndex: 1,
+        solution: 'Passo 1: Área do trapézio = [(B + b) × h] / 2 = [(20 + 14) × 10] / 2 = (34 × 10) / 2 = 170 m².\nPasso 2: Valor total = 170 m² × R$ 500,00 = R$ 85.000,00.'
+      }
+    ];
+
+    /**
+     * ==========================================================================
+     * 3. STATE MANAGEMENT & LOCALSTORAGE PERSISTENCE
+     * ==========================================================================
+     */
+    function getDefaultState() {
+      return {
+        activeTab: 'plano',
+        selectedWeekId: 1,
+        weeks: getInitialWeeks(),
+        worksheetAnswers: {}, // { q1: selectedIndex }
+        worksheetTopicFilter: 'Todos',
+        externalPdfs: [
+          { id: 'pdf-1', title: 'Caderno de Provas ENEM (Matemática)', url: 'https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos' }
+        ],
+        libraryVideos: [
+          {
+            id: 'vid-1',
+            subject: 'Matemática',
+            tag: 'Teoria',
+            title: 'Matemática Básica Completa para o ENEM (Revisão)',
+            url: 'https://www.youtube.com/results?search_query=matematica+basica+enem+revisao',
+            watched: false
+          },
+          {
+            id: 'vid-2',
+            subject: 'Matemática',
+            tag: 'Resolução',
+            title: 'Questões Comentadas de Escala Cartográfica ENEM',
+            url: 'https://www.youtube.com/results?search_query=escala+cartografica+enem+exercicios',
+            watched: false
+          }
+        ],
+        libraryFilter: 'Todas',
+        errorNotes: [
+          {
+            id: 'err-init-1',
+            topic: 'Escala Cartográfica (Volume)',
+            why: 'Multipliquei o volume direto pela escala linear em vez de elevar ao cubo.',
+            fix: 'Escala Linear = E | Escala Área = E² | Escala Volume = E³. E lembre-se: 1 m³ = 1.000 L.',
+            date: 'Exemplo Inicial'
+          }
+        ],
+        ufrjScores: {
+          matematica: 820,
+          redacao: 880,
+          natureza: 710,
+          linguagens: 660,
+          humanas: 680
+        }
+      };
+    }
+
+    let state = loadState();
+    let activeCardModal = null; // { weekId, dayId, cardId }
+    let activeAddTaskModal = null; // { weekId, dayId }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && Array.isArray(parsed.weeks) && parsed.weeks.length > 0) {
+            return { ...getDefaultState(), ...parsed };
+          }
+        }
+      } catch (e) {
+        console.error('Erro ao carregar dados:', e);
+      }
+      return getDefaultState();
+    }
+
+    function saveState(notify = true) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        if (notify) showToast('Progresso salvo no dispositivo');
+      } catch (e) {
+        console.error('Erro ao salvar dados:', e);
+      }
+    }
+
+    let toastTimer = null;
+    function showToast(text) {
+      const el = document.getElementById('toast');
+      document.getElementById('toast-msg').textContent = text;
+      el.classList.remove('hidden');
+      requestAnimationFrame(() => el.classList.remove('translate-y-3', 'opacity-0'));
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        el.classList.add('translate-y-3', 'opacity-0');
+        setTimeout(() => el.classList.add('hidden'), 300);
+      }, 2200);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    /**
+     * ==========================================================================
+     * 4. TAB 1: PLANO DE ESTUDOS (KANBAN BOARD & CARD DETAILS)
+     * ==========================================================================
+     */
+    function getTagStyle(tag) {
+      const t = (tag || '').toUpperCase();
+      if (t.includes('ACADEMIA') || t.includes('ROTINA')) {
+        return 'bg-teal-50 text-teal-800 border border-teal-200';
+      }
+      if (t.includes('FÍSICA')) {
+        return 'bg-blue-50 text-blue-800 border border-blue-200';
+      }
+      if (t.includes('REDAÇÃO')) {
+        return 'bg-purple-50 text-purple-800 border border-purple-200';
+      }
+      if (t.includes('REVISÃO')) {
+        return 'bg-rose-50 text-rose-800 border border-rose-200';
+      }
+      return 'bg-amber-50 text-amber-800 border border-amber-200'; // Matemática default (Amber)
+    }
+
+    function renderStudyPlan() {
+      const week = state.weeks.find(w => w.id === state.selectedWeekId) || state.weeks[0];
+      state.selectedWeekId = week.id;
+
+      document.getElementById('active-week-title').textContent = week.title;
+
+      // Calculate week progress
+      let totalSteps = 0;
+      let doneSteps = 0;
+      week.days.forEach(d => {
+        d.cards.forEach(c => {
+          totalSteps += c.steps.length;
+          doneSteps += c.steps.filter(s => s.done).length;
+        });
+      });
+      const pct = totalSteps === 0 ? 0 : Math.round((doneSteps / totalSteps) * 100);
+      const circumference = 2 * Math.PI * 34;
+      const offset = circumference - (pct / 100) * circumference;
+
+      document.getElementById('week-ring').style.strokeDashoffset = offset;
+      document.getElementById('week-ring-percent').textContent = `${pct}%`;
+      document.getElementById('mobile-week-badge').textContent = `${pct}%`;
+
+      // Week pills
+      const pillsEl = document.getElementById('week-selector-pills');
+      pillsEl.innerHTML = state.weeks.map(w => {
+        const active = w.id === week.id;
+        return `
+          <button onclick="selectWeek(${w.id})" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition ${
+            active ? 'bg-gray-900 text-white shadow-xs' : 'text-gray-600 hover:text-gray-900 hover:bg-white'
+          }">
+            ${escapeHtml(w.label)}
+          </button>
+        `;
+      }).join('');
+
+      // Hide unlock button if weeks 3 & 4 are already unlocked
+      const unlockBtn = document.getElementById('unlock-more-weeks-btn');
+      if (state.weeks.some(w => w.id === 3)) {
+        unlockBtn.classList.add('hidden');
+      } else {
+        unlockBtn.classList.remove('hidden');
+      }
+
+      // 5-Column Kanban
+      const board = document.getElementById('kanban-board');
+      board.innerHTML = week.days.map(day => {
+        let dayTotal = 0;
+        let dayDone = 0;
+        day.cards.forEach(c => {
+          dayTotal += c.steps.length;
+          dayDone += c.steps.filter(s => s.done).length;
+        });
+
+        const cardsHtml = day.cards.map(card => {
+          const cTotal = card.steps.length;
+          const cDone = card.steps.filter(s => s.done).length;
+          const cPct = cTotal === 0 ? 0 : Math.round((cDone / cTotal) * 100);
+          const isDone = cPct === 100 && cTotal > 0;
+
+          return `
+            <div onclick="openCardDetail(${week.id}, '${day.id}', '${card.id}')" role="button" tabindex="0"
+              class="group bg-white rounded-2xl p-4 shadow-soft hover:shadow-hover border ${
+                isDone ? 'border-emerald-300' : 'border-borderline'
+              } transition-all duration-200 cursor-pointer flex flex-col justify-between min-h-[155px]">
+              <div>
+                <div class="flex items-center justify-between gap-2 mb-2.5">
+                  <span class="px-2.5 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider ${getTagStyle(card.tag)}">
+                    ${escapeHtml(card.tag)}
+                  </span>
+                  <div class="flex items-center gap-1.5">
+                    ${card.links && card.links.length > 0 ? `<span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">${card.links.length} link(s)</span>` : ''}
+                  </div>
+                </div>
+                <h4 class="text-sm font-extrabold text-gray-900 group-hover:text-brandDark transition-colors leading-snug">
+                  ${escapeHtml(card.title)}
+                </h4>
+              </div>
+
+              <div class="mt-4 pt-2.5 border-t border-gray-100 flex items-center justify-between">
+                <span class="text-[11px] font-semibold text-gray-400">${cDone}/${cTotal} passos</span>
+                ${
+                  isDone
+                    ? `<span class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700">Concluído <span class="w-2.5 h-2.5 rounded-full bg-brand"></span></span>`
+                    : `<span class="text-xs font-bold ${cPct > 0 ? 'text-amber-600' : 'text-gray-400'}">${cPct}%</span>`
+                }
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        return `
+          <div class="flex flex-col gap-3">
+            <div class="px-1 flex items-center justify-between">
+              <h3 class="text-sm font-extrabold text-gray-900">${escapeHtml(day.dayName)}</h3>
+              <span class="text-[11px] font-bold text-gray-500 bg-white px-2.5 py-0.5 rounded-full border border-borderline">
+                ${dayDone}/${dayTotal}
+              </span>
+            </div>
+
+            <div class="space-y-3">
+              ${cardsHtml}
+            </div>
+
+            <button onclick="openAddTask(${week.id}, '${day.id}')" class="w-full py-2.5 px-3 rounded-2xl border border-dashed border-gray-300 hover:border-gray-900 hover:bg-white text-xs font-bold text-gray-500 hover:text-gray-900 transition flex items-center justify-center gap-1.5">
+              <span>+ Adicionar Tarefa</span>
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectWeek(weekId) {
+      state.selectedWeekId = weekId;
+      saveState(false);
+      renderStudyPlan();
+    }
+
+    // Card Detail Modal Logic
+    function openCardDetail(weekId, dayId, cardId) {
+      const week = state.weeks.find(w => w.id === weekId);
+      const day = week?.days.find(d => d.id === dayId);
+      const card = day?.cards.find(c => c.id === cardId);
+      if (!card) return;
+
+      activeCardModal = { weekId, dayId, cardId };
+
+      const tagPill = document.getElementById('modal-tag-pill');
+      tagPill.textContent = card.tag;
+      tagPill.className = `px-2.5 py-0.5 rounded-lg text-[11px] font-extrabold uppercase tracking-wider ${getTagStyle(card.tag)}`;
+
+      document.getElementById('modal-day-subtitle').textContent = `${week.label} • ${day.dayName}`;
+      document.getElementById('modal-card-title').textContent = card.title;
+
+      const whyContainer = document.getElementById('modal-why-container');
+      if (card.whyEnem) {
+        whyContainer.classList.remove('hidden');
+        document.getElementById('modal-why-body').textContent = card.whyEnem;
+      } else {
+        whyContainer.classList.add('hidden');
+      }
+
+      document.getElementById('modal-notes-textarea').value = card.notes || '';
+      document.getElementById('delete-card-btn').classList.toggle('hidden', !card.isCustom);
+
+      renderModalSteps(card);
+      renderModalLinks(card);
+
+      const m = document.getElementById('card-detail-modal');
+      m.classList.remove('hidden');
+      m.classList.add('flex');
+    }
+
+    function renderModalSteps(card) {
+      const total = card.steps.length;
+      const done = card.steps.filter(s => s.done).length;
+      document.getElementById('modal-steps-progress').textContent = `${done}/${total} passos concluídos`;
+
+      document.getElementById('modal-steps-container').innerHTML = card.steps.map(step => `
+        <label class="flex items-start gap-3 p-3.5 rounded-2xl border ${
+          step.done ? 'bg-emerald-50/60 border-emerald-200' : 'bg-canvas border-borderline hover:border-gray-300'
+        } cursor-pointer transition select-none">
+          <input type="checkbox" ${step.done ? 'checked' : ''} onchange="toggleModalStep('${step.id}')" class="mt-0.5 w-5 h-5 rounded-md accent-brand cursor-pointer shrink-0" />
+          <span class="text-sm leading-relaxed ${step.done ? 'line-through text-gray-400' : 'text-gray-800 font-medium'}">
+            ${escapeHtml(step.text)}
+          </span>
+        </label>
+      `).join('');
+    }
+
+    function toggleModalStep(stepId) {
+      if (!activeCardModal) return;
+      const { weekId, dayId, cardId } = activeCardModal;
+      const card = state.weeks.find(w => w.id === weekId)?.days.find(d => d.id === dayId)?.cards.find(c => c.id === cardId);
+      const step = card?.steps.find(s => s.id === stepId);
+      if (step) {
+        step.done = !step.done;
+        saveState(true);
+        renderModalSteps(card);
+        renderStudyPlan();
+      }
+    }
+
+    function renderModalLinks(card) {
+      const container = document.getElementById('card-links-list');
+      if (!card.links || card.links.length === 0) {
+        container.innerHTML = `<p class="text-xs text-gray-400 italic">Nenhum link adicionado ainda. Cole acima o link da videoaula ou lista de exercícios.</p>`;
+        return;
+      }
+      container.innerHTML = card.links.map((lk, idx) => `
+        <div class="flex items-center justify-between gap-2 bg-white px-3 py-2 rounded-xl border border-borderline">
+          <a href="${escapeHtml(lk.url)}" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-blue-600 hover:underline truncate flex items-center gap-1.5">
+            <span>↗</span>
+            <span>${escapeHtml(lk.title)}</span>
+          </a>
+          <button type="button" onclick="removeCardLink(${idx})" class="text-gray-400 hover:text-red-500 text-xs font-bold px-1.5">✕</button>
+        </div>
+      `).join('');
+    }
+
+    function removeCardLink(index) {
+      if (!activeCardModal) return;
+      const { weekId, dayId, cardId } = activeCardModal;
+      const card = state.weeks.find(w => w.id === weekId)?.days.find(d => d.id === dayId)?.cards.find(c => c.id === cardId);
+      if (card && card.links) {
+        card.links.splice(index, 1);
+        saveState(true);
+        renderModalLinks(card);
+        renderStudyPlan();
+      }
+    }
+
+    function closeCardDetail() {
+      if (activeCardModal) {
+        const { weekId, dayId, cardId } = activeCardModal;
+        const card = state.weeks.find(w => w.id === weekId)?.days.find(d => d.id === dayId)?.cards.find(c => c.id === cardId);
+        if (card) {
+          const notesVal = document.getElementById('modal-notes-textarea').value.trim();
+          if (card.notes !== notesVal) {
+            card.notes = notesVal;
+            saveState(true);
+            renderStudyPlan();
+          }
+        }
+      }
+      activeCardModal = null;
+      const m = document.getElementById('card-detail-modal');
+      m.classList.add('hidden');
+      m.classList.remove('flex');
+    }
+
+    // Add Custom Task Modal
+    function openAddTask(weekId, dayId) {
+      const week = state.weeks.find(w => w.id === weekId);
+      const day = week?.days.find(d => d.id === dayId);
+      if (!day) return;
+      activeAddTaskModal = { weekId, dayId };
+      document.getElementById('add-task-day-badge').textContent = `${week.label} • ${day.dayName}`;
+      document.getElementById('task-title-input').value = '';
+      document.getElementById('task-desc-input').value = '';
+      const m = document.getElementById('add-task-modal');
+      m.classList.remove('hidden');
+      m.classList.add('flex');
+    }
+
+    function closeAddTask() {
+      activeAddTaskModal = null;
+      const m = document.getElementById('add-task-modal');
+      m.classList.add('hidden');
+      m.classList.remove('flex');
+    }
+
+    /**
+     * ==========================================================================
+     * 5. TAB 2: FOLHINHAS DE EXERCÍCIOS (INTERACTIVE + DOWNLOADABLE PDF/HTML)
+     * ==========================================================================
+     */
+    function renderWorksheets() {
+      const topics = ['Todos', ...new Set(WORKSHEET_QUESTIONS.map(q => q.topic))];
+      const filtersEl = document.getElementById('worksheet-topic-filters');
+      filtersEl.innerHTML = topics.map(topic => {
+        const active = state.worksheetTopicFilter === topic;
+        return `
+          <button onclick="setWorksheetFilter('${escapeHtml(topic)}')" class="px-3.5 py-2 rounded-xl text-xs font-bold transition ${
+            active ? 'bg-gray-900 text-white' : 'bg-white text-gray-600 border border-borderline hover:bg-gray-50'
+          }">
+            ${escapeHtml(topic)}
+          </button>
+        `;
+      }).join('');
+
+      const filtered = state.worksheetTopicFilter === 'Todos'
+        ? WORKSHEET_QUESTIONS
+        : WORKSHEET_QUESTIONS.filter(q => q.topic === state.worksheetTopicFilter);
+
+      const container = document.getElementById('worksheet-questions-container');
+      container.innerHTML = filtered.map((q, idx) => {
+        const userChoice = state.worksheetAnswers[q.id];
+        const hasAnswered = userChoice !== undefined;
+        const letters = ['A', 'B', 'C', 'D', 'E'];
+
+        const optionsHtml = q.options.map((opt, optIdx) => {
+          let btnClass = 'bg-canvas border-borderline text-gray-800 hover:border-gray-400';
+          if (hasAnswered) {
+            if (optIdx === q.correctIndex) {
+              btnClass = 'bg-emerald-50 border-emerald-500 text-emerald-900 font-bold';
+            } else if (optIdx === userChoice) {
+              btnClass = 'bg-rose-50 border-rose-500 text-rose-900 font-bold';
+            } else {
+              btnClass = 'bg-canvas border-borderline text-gray-400';
+            }
+          }
+
+          return `
+            <button onclick="answerWorksheetQuestion('${q.id}', ${optIdx})" class="w-full text-left p-3 rounded-xl border text-sm transition flex items-center gap-3 ${btnClass}">
+              <span class="w-7 h-7 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-xs font-extrabold shrink-0">
+                ${letters[optIdx]}
+              </span>
+              <span>${escapeHtml(opt)}</span>
+            </button>
+          `;
+        }).join('');
+
+        return `
+          <div class="bg-white rounded-3xl p-6 shadow-soft border border-borderline">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded-lg text-xs font-extrabold bg-amber-50 text-amber-800 border border-amber-200">
+                  Questão ${idx + 1} • ${escapeHtml(q.topic)}
+                </span>
+                <span class="text-xs font-semibold text-gray-400">${escapeHtml(q.week)}</span>
+              </div>
+              <button onclick="downloadWorksheet('${q.id}', true)" class="text-xs font-bold text-gray-600 hover:text-gray-900 bg-canvas px-3 py-1.5 rounded-xl border border-borderline">
+                Baixar Folhinha Individual
+              </button>
+            </div>
+
+            <p class="text-sm sm:text-base text-gray-800 leading-relaxed font-medium mb-4">
+              ${escapeHtml(q.statement)}
+            </p>
+
+            <div class="space-y-2 mb-4">
+              ${optionsHtml}
+            </div>
+
+            <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+              <button onclick="toggleSolutionBox('sol-${q.id}')" class="text-xs font-extrabold text-brandDark hover:underline">
+                Ver Resolução Passo a Passo ▾
+              </button>
+              ${hasAnswered ? `<button onclick="clearQuestionAnswer('${q.id}')" class="text-xs font-semibold text-gray-400 hover:text-gray-700">Refazer questão</button>` : ''}
+            </div>
+
+            <div id="sol-${q.id}" class="${hasAnswered ? '' : 'hidden'} mt-3 p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200 text-xs sm:text-sm text-gray-800 whitespace-pre-line leading-relaxed">
+              <strong class="text-emerald-800 block mb-1">Gabarito: Alternativa ${letters[q.correctIndex]}</strong>
+              ${escapeHtml(q.solution)}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      renderExternalPdfs();
+    }
+
+    function setWorksheetFilter(topic) {
+      state.worksheetTopicFilter = topic;
+      saveState(false);
+      renderWorksheets();
+    }
+
+    function answerWorksheetQuestion(qId, optIdx) {
+      state.worksheetAnswers[qId] = optIdx;
+      saveState(true);
+      renderWorksheets();
+    }
+
+    function clearQuestionAnswer(qId) {
+      delete state.worksheetAnswers[qId];
+      saveState(false);
+      renderWorksheets();
+    }
+
+    function toggleSolutionBox(elId) {
+      const el = document.getElementById(elId);
+      if (el) el.classList.toggle('hidden');
+    }
+
+    // Generates a clean printer-ready HTML file for download (works offline on Android/Tablet!)
+    function downloadWorksheet(targetId, includeAnswers) {
+      const questions = targetId === 'all'
+        ? WORKSHEET_QUESTIONS
+        : WORKSHEET_QUESTIONS.filter(q => q.id === targetId);
+
+      const letters = ['A', 'B', 'C', 'D', 'E'];
+      const htmlDoc = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Folhinha de Exercícios ENEM 2027 - Engenharia Civil UFRJ</title>
+<style>
+  body { font-family: Arial, sans-serif; color: #111; max-width: 800px; margin: 30px auto; padding: 0 20px; line-height: 1.5; }
+  header { border-bottom: 2px solid #00C86F; padding-bottom: 12px; margin-bottom: 24px; }
+  h1 { font-size: 20px; margin: 0; }
+  p.sub { font-size: 13px; color: #555; margin: 4px 0 0; }
+  .q-box { margin-bottom: 26px; padding-bottom: 18px; border-bottom: 1px solid #ddd; page-break-inside: avoid; }
+  .q-meta { font-size: 12px; font-weight: bold; color: #008f4f; text-transform: uppercase; }
+  .q-text { font-size: 14px; margin: 8px 0 12px; }
+  .opts { list-style: none; padding: 0; margin: 0; font-size: 13.5px; }
+  .opts li { margin-bottom: 6px; }
+  .sol { margin-top: 12px; background: #f3faf6; border-left: 4px solid #00C86F; padding: 10px 14px; font-size: 13px; white-space: pre-line; }
+  @media print { .no-print { display: none; } }
+</style>
+</head>
+<body>
+  <div class="no-print" style="background:#111;color:#fff;padding:12px 16px;border-radius:10px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;">
+    <span>Folhinha pronta! Use <strong>Ctrl+P / Compartilhar &gt; Imprimir / Salvar como PDF</strong>.</span>
+    <button onclick="window.print()" style="background:#00C86F;color:#fff;border:none;padding:8px 14px;border-radius:8px;font-weight:bold;cursor:pointer;">Imprimir / PDF</button>
+  </div>
+  <header>
+    <h1>Folhinha de Exercícios • Base Matemática ENEM 2027</h1>
+    <p class="sub">Meta: Engenharia Civil (UFRJ) • ${includeAnswers ? 'Versão com Gabarito Comentado' : 'Versão para Resolução'}</p>
+  </header>
+  ${questions.map((q, i) => `
+    <div class="q-box">
+      <div class="q-meta">Questão ${i + 1} — ${q.topic} (${q.week})</div>
+      <div class="q-text">${q.statement}</div>
+      <ul class="opts">
+        ${q.options.map((o, oi) => `<li><strong>(${letters[oi]})</strong> ${o}</li>`).join('')}
+      </ul>
+      ${includeAnswers ? `<div class="sol"><strong>Gabarito: (${letters[q.correctIndex]})</strong>\n${q.solution}</div>` : ''}
+    </div>
+  `).join('')}
+</body>
+</html>`;
+
+      const blob = new Blob([htmlDoc], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = includeAnswers ? 'folhinha-enem-com-gabarito.html' : 'folhinha-enem-exercicios.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Folhinha baixada! Abra no navegador para imprimir ou anotar.');
+    }
+
+    function renderExternalPdfs() {
+      const container = document.getElementById('external-pdf-list');
+      if (!state.externalPdfs || state.externalPdfs.length === 0) {
+        container.innerHTML = `<p class="text-xs text-gray-400 col-span-full">Nenhuma lista externa salva ainda.</p>`;
+        return;
+      }
+      container.innerHTML = state.externalPdfs.map(item => `
+        <div class="p-3.5 rounded-2xl bg-canvas border border-borderline flex items-center justify-between gap-2">
+          <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-blue-600 hover:underline truncate">
+            📄 ${escapeHtml(item.title)}
+          </a>
+          <button onclick="removeExternalPdf('${item.id}')" class="text-gray-400 hover:text-red-500 text-xs font-bold px-1.5">✕</button>
+        </div>
+      `).join('');
+    }
+
+    function removeExternalPdf(id) {
+      state.externalPdfs = state.externalPdfs.filter(p => p.id !== id);
+      saveState(true);
+      renderExternalPdfs();
+    }
+
+    /**
+     * ==========================================================================
+     * 6. TAB 3: BIBLIOTECA DE AULAS
+     * ==========================================================================
+     */
+    function renderLibrary() {
+      document.getElementById('nav-count-aulas').textContent = state.libraryVideos.length;
+
+      const subjects = ['Todas', 'Matemática', 'Física', 'Química', 'Redação', 'Linguagens', 'Humanas'];
+      document.getElementById('library-filters').innerHTML = subjects.map(sub => {
+        const active = state.libraryFilter === sub;
+        return `
+          <button onclick="setLibraryFilter('${sub}')" class="px-3.5 py-2 rounded-xl text-xs font-bold transition ${
+            active ? 'bg-gray-900 text-white' : 'bg-white text-gray-600 border border-borderline hover:bg-gray-50'
+          }">
+            ${sub}
+          </button>
+        `;
+      }).join('');
+
+      const list = state.libraryFilter === 'Todas'
+        ? state.libraryVideos
+        : state.libraryVideos.filter(v => v.subject === state.libraryFilter);
+
+      const grid = document.getElementById('library-grid');
+      if (list.length === 0) {
+        grid.innerHTML = `<div class="col-span-full bg-white rounded-3xl p-8 text-center border border-borderline text-sm text-gray-500">Nenhuma aula salva nesta categoria ainda. Use o formulário acima para adicionar!</div>`;
+        return;
+      }
+
+      grid.innerHTML = list.map(vid => `
+        <div class="bg-white rounded-2xl p-5 shadow-soft border ${vid.watched ? 'border-emerald-200 bg-emerald-50/20' : 'border-borderline'} flex flex-col justify-between gap-4">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-2.5">
+              <div class="flex items-center gap-1.5">
+                <span class="px-2.5 py-0.5 rounded-md text-[10px] font-extrabold uppercase bg-blue-50 text-blue-700 border border-blue-200">${escapeHtml(vid.subject)}</span>
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-gray-100 text-gray-600">${escapeHtml(vid.tag)}</span>
+              </div>
+              <button onclick="deleteLibraryVideo('${vid.id}')" class="text-gray-400 hover:text-red-500 text-xs font-bold">✕</button>
+            </div>
+            <h4 class="text-sm font-extrabold text-gray-900 leading-snug">${escapeHtml(vid.title)}</h4>
+          </div>
+
+          <div class="pt-3 border-t border-gray-100 flex items-center justify-between gap-2">
+            <a href="${escapeHtml(vid.url)}" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2 rounded-xl bg-gray-900 hover:bg-gray-800 text-white text-xs font-bold transition">
+              Assistir Aula ↗
+            </a>
+            <button onclick="toggleVideoWatched('${vid.id}')" class="text-xs font-bold ${vid.watched ? 'text-emerald-600' : 'text-gray-400 hover:text-gray-700'}">
+              ${vid.watched ? '✓ Assistida' : 'Marcar assistida'}
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function setLibraryFilter(sub) {
+      state.libraryFilter = sub;
+      saveState(false);
+      renderLibrary();
+    }
+
+    function toggleVideoWatched(id) {
+      const v = state.libraryVideos.find(item => item.id === id);
+      if (v) {
+        v.watched = !v.watched;
+        saveState(true);
+        renderLibrary();
+      }
+    }
+
+    function deleteLibraryVideo(id) {
+      state.libraryVideos = state.libraryVideos.filter(item => item.id !== id);
+      saveState(true);
+      renderLibrary();
+    }
+
+    /**
+     * ==========================================================================
+     * 7. TAB 4: CADERNO DE ERROS & FÓRMULAS
+     * ==========================================================================
+     */
+    function renderErrorBook() {
+      document.getElementById('nav-count-erros').textContent = state.errorNotes.length;
+      const container = document.getElementById('errors-list');
+
+      if (state.errorNotes.length === 0) {
+        container.innerHTML = `<div class="col-span-full bg-white rounded-3xl p-8 text-center border border-borderline text-sm text-gray-500">Seu Caderno de Erros está vazio. Registre acima sempre que errar uma questão!</div>`;
+        return;
+      }
+
+      container.innerHTML = state.errorNotes.map(item => `
+        <div class="bg-white rounded-2xl p-5 shadow-soft border border-borderline flex flex-col justify-between gap-3">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <span class="px-2.5 py-0.5 rounded-md text-xs font-extrabold bg-rose-50 text-rose-700 border border-rose-200">
+                ${escapeHtml(item.topic)}
+              </span>
+              <button onclick="deleteErrorItem('${item.id}')" class="text-gray-400 hover:text-red-500 text-xs font-bold">✕</button>
+            </div>
+            <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mt-2">Por que errei:</p>
+            <p class="text-sm text-gray-800 mb-2.5">${escapeHtml(item.why)}</p>
+            <div class="p-3 rounded-xl bg-emerald-50/70 border border-emerald-200">
+              <p class="text-[11px] font-extrabold text-emerald-800 uppercase">Como resolver certo / Fórmula:</p>
+              <p class="text-xs sm:text-sm font-semibold text-gray-900 mt-0.5">${escapeHtml(item.fix)}</p>
+            </div>
+          </div>
+          <span class="text-[11px] text-gray-400">${escapeHtml(item.date || '')}</span>
+        </div>
+      `).join('');
+    }
+
+    function deleteErrorItem(id) {
+      state.errorNotes = state.errorNotes.filter(e => e.id !== id);
+      saveState(true);
+      renderErrorBook();
+    }
+
+    /**
+     * ==========================================================================
+     * 8. TAB 5: META UFRJ (ENGENHARIA CIVIL - SIMULADOR SISU)
+     * ==========================================================================
+     */
+    function renderUfrjSimulator() {
+      // UFRJ Escola Politécnica Engenharia Civil typical SISU weights:
+      // Matemática: 4, Redação: 3, Natureza: 3, Linguagens: 2, Humanas: 1 (Total weight = 13)
+      const areas = [
+        { key: 'matematica', label: 'Matemática e suas Tecnologias', weight: 4, color: 'accent-amber-500' },
+        { key: 'redacao', label: 'Redação', weight: 3, color: 'accent-purple-600' },
+        { key: 'natureza', label: 'Ciências da Natureza (Física/Quím/Bio)', weight: 3, color: 'accent-blue-600' },
+        { key: 'linguagens', label: 'Linguagens e Códigos', weight: 2, color: 'accent-teal-600' },
+        { key: 'humanas', label: 'Ciências Humanas', weight: 1, color: 'accent-rose-600' }
+      ];
+
+      const container = document.getElementById('score-sliders-container');
+      container.innerHTML = areas.map(a => {
+        const val = state.ufrjScores[a.key] ?? 700;
+        return `
+          <div class="p-3.5 rounded-2xl bg-canvas border border-borderline">
+            <div class="flex items-center justify-between mb-1.5">
+              <div>
+                <span class="text-sm font-bold text-gray-900">${a.label}</span>
+                <span class="ml-2 text-[11px] font-extrabold bg-white border border-borderline text-gray-600 px-2 py-0.5 rounded-full">Peso ${a.weight}</span>
+              </div>
+              <span id="val-label-${a.key}" class="text-sm font-extrabold text-gray-900">${val} pts</span>
+            </div>
+            <input type="range" min="400" max="1000" step="5" value="${val}"
+              oninput="updateUfrjScore('${a.key}', this.value)"
+              class="w-full h-2 bg-gray-200 rounded-lg cursor-pointer ${a.color}" />
+          </div>
+        `;
+      }).join('');
+
+      recalculateUfrjAverage();
+    }
+
+    function updateUfrjScore(key, value) {
+      state.ufrjScores[key] = Number(value);
+      document.getElementById(`val-label-${key}`).textContent = `${value} pts`;
+      saveState(false);
+      recalculateUfrjAverage();
+    }
+
+    function recalculateUfrjAverage() {
+      const s = state.ufrjScores;
+      const weightedSum = (s.matematica * 4) + (s.redacao * 3) + (s.natureza * 3) + (s.linguagens * 2) + (s.humanas * 1);
+      const avg = (weightedSum / 13).toFixed(2);
+
+      document.getElementById('ufrj-weighted-score').textContent = avg;
+      const statusPill = document.getElementById('ufrj-status-pill');
+      if (Number(avg) >= 785) {
+        statusPill.textContent = 'Dentro da faixa de aprovação UFRJ!';
+        statusPill.className = 'block text-xs font-extrabold text-emerald-700 mt-0.5';
+      } else {
+        statusPill.textContent = `Faltam ${(785 - Number(avg)).toFixed(1)} pts para meta 785+`;
+        statusPill.className = 'block text-xs font-bold text-amber-700 mt-0.5';
+      }
+
+      const mathScore = s.matematica;
+      document.getElementById('math-goal-display').textContent = `${mathScore} pts`;
+      const pct = Math.min(100, Math.max(0, Math.round(((mathScore - 400) / 500) * 100)));
+      document.getElementById('math-goal-bar').style.width = `${pct}%`;
+    }
+
+    /**
+     * ==========================================================================
+     * 9. NAVIGATION, BACKUP EXPORT/IMPORT & EVENT LISTENERS
+     * ==========================================================================
+     */
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      saveState(false);
+
+      document.querySelectorAll('.nav-item').forEach(btn => {
+        const isCurrent = btn.getAttribute('data-tab') === tabId;
+        btn.className = isCurrent
+          ? 'nav-item w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition bg-gray-900 text-white shadow-xs'
+          : 'nav-item w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition';
+      });
+
+      ['plano', 'folhinhas', 'biblioteca', 'caderno', 'meta-ufrj'].forEach(id => {
+        document.getElementById(`tab-${id}`).classList.toggle('hidden', id !== tabId);
+      });
+
+      // Close mobile drawer
+      document.getElementById('sidebar').classList.add('-translate-x-full');
+      document.getElementById('sidebar-backdrop').classList.add('hidden');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Tab switching
+      document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab')));
+      });
+
+      // Mobile drawer
+      document.getElementById('open-sidebar-btn').addEventListener('click', () => {
+        document.getElementById('sidebar').classList.remove('-translate-x-full');
+        document.getElementById('sidebar-backdrop').classList.remove('hidden');
+      });
+      document.getElementById('close-sidebar-btn').addEventListener('click', () => {
+        document.getElementById('sidebar').classList.add('-translate-x-full');
+        document.getElementById('sidebar-backdrop').classList.add('hidden');
+      });
+      document.getElementById('sidebar-backdrop').addEventListener('click', () => {
+        document.getElementById('sidebar').classList.add('-translate-x-full');
+        document.getElementById('sidebar-backdrop').classList.add('hidden');
+      });
+
+      // PWA Install Button
+      document.getElementById('install-pwa-btn').addEventListener('click', async () => {
+        if (deferredInstallPrompt) {
+          deferredInstallPrompt.prompt();
+          await deferredInstallPrompt.userChoice;
+          deferredInstallPrompt = null;
+        } else {
+          const m = document.getElementById('pwa-help-modal');
+          m.classList.remove('hidden');
+          m.classList.add('flex');
+        }
+      });
+      document.getElementById('close-pwa-help-btn').addEventListener('click', () => {
+        document.getElementById('pwa-help-modal').classList.add('hidden');
+        document.getElementById('pwa-help-modal').classList.remove('flex');
+      });
+      document.getElementById('ok-pwa-help-btn').addEventListener('click', () => {
+        document.getElementById('pwa-help-modal').classList.add('hidden');
+        document.getElementById('pwa-help-modal').classList.remove('flex');
+      });
+
+      // Unlock Weeks 3 & 4
+      document.getElementById('unlock-more-weeks-btn').addEventListener('click', () => {
+        if (!state.weeks.some(w => w.id === 3)) {
+          state.weeks.push(...getWeeks3And4());
+          state.selectedWeekId = 3;
+          saveState(true);
+          renderStudyPlan();
+          showToast('Semanas 3 e 4 liberadas no Plano!');
+        }
+      });
+
+      // Create Custom Week
+      document.getElementById('create-custom-week-btn').addEventListener('click', () => {
+        const nextNum = state.weeks.length + 1;
+        const newWeek = {
+          id: Date.now(),
+          label: `Semana ${nextNum}`,
+          title: `Semana ${nextNum}: Cronograma Personalizado`,
+          days: [
+            { id: `w${nextNum}-d1`, dayName: 'Dia 1 (Seg)', cards: [] },
+            { id: `w${nextNum}-d2`, dayName: 'Dia 2 (Ter)', cards: [] },
+            { id: `w${nextNum}-d3`, dayName: 'Dia 3 (Qua)', cards: [] },
+            { id: `w${nextNum}-d4`, dayName: 'Dia 4 (Qui)', cards: [] },
+            { id: `w${nextNum}-d5`, dayName: 'Dia 5 (Sex)', cards: [] }
+          ]
+        };
+        state.weeks.push(newWeek);
+        state.selectedWeekId = newWeek.id;
+        saveState(true);
+        renderStudyPlan();
+        showToast(`Semana ${nextNum} criada!`);
+      });
+
+      // Card Detail Modal Actions
+      document.getElementById('close-detail-modal-btn').addEventListener('click', closeCardDetail);
+      document.getElementById('save-close-detail-btn').addEventListener('click', closeCardDetail);
+      document.getElementById('card-detail-modal').addEventListener('click', (e) => {
+        if (e.target.id === 'card-detail-modal') closeCardDetail();
+      });
+
+      document.getElementById('complete-all-steps-btn').addEventListener('click', () => {
+        if (!activeCardModal) return;
+        const { weekId, dayId, cardId } = activeCardModal;
+        const card = state.weeks.find(w => w.id === weekId)?.days.find(d => d.id === dayId)?.cards.find(c => c.id === cardId);
+        if (card) {
+          card.steps.forEach(s => s.done = true);
+          saveState(true);
+          renderModalSteps(card);
+          renderStudyPlan();
+        }
+      });
+
+      document.getElementById('delete-card-btn').addEventListener('click', () => {
+        if (!activeCardModal) return;
+        const { weekId, dayId, cardId } = activeCardModal;
+        const day = state.weeks.find(w => w.id === weekId)?.days.find(d => d.id === dayId);
+        if (day) {
+          day.cards = day.cards.filter(c => c.id !== cardId);
+          activeCardModal = null;
+          saveState(true);
+          document.getElementById('card-detail-modal').classList.add('hidden');
+          document.getElementById('card-detail-modal').classList.remove('flex');
+          renderStudyPlan();
+        }
+      });
+
+      document.getElementById('card-add-link-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!activeCardModal) return;
+        const title = document.getElementById('card-link-title').value.trim();
+        const url = document.getElementById('card-link-url').value.trim();
+        if (!title || !url) return;
+
+        const { weekId, dayId, cardId } = activeCardModal;
+        const card = state.weeks.find(w => w.id === weekId)?.days.find(d => d.id === dayId)?.cards.find(c => c.id === cardId);
+        if (card) {
+          if (!card.links) card.links = [];
+          card.links.push({ title, url });
+          document.getElementById('card-link-title').value = '';
+          document.getElementById('card-link-url').value = '';
+          saveState(true);
+          renderModalLinks(card);
+          renderStudyPlan();
+        }
+      });
+
+      // Add Custom Task Modal Form
+      document.getElementById('close-add-task-btn').addEventListener('click', closeAddTask);
+      document.getElementById('cancel-add-task-btn').addEventListener('click', closeAddTask);
+      document.getElementById('add-task-modal').addEventListener('click', (e) => {
+        if (e.target.id === 'add-task-modal') closeAddTask();
+      });
+
+      document.getElementById('add-task-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!activeAddTaskModal) return;
+        const { weekId, dayId } = activeAddTaskModal;
+        const day = state.weeks.find(w => w.id === weekId)?.days.find(d => d.id === dayId);
+        if (!day) return;
+
+        const tag = document.getElementById('task-category-select').value;
+        const title = document.getElementById('task-title-input').value.trim();
+        const desc = document.getElementById('task-desc-input').value.trim() || `Concluir: ${title}`;
+
+        day.cards.push({
+          id: 'custom-' + Date.now(),
+          tag,
+          title,
+          whyEnem: '',
+          isCustom: true,
+          steps: [{ id: 'st-' + Date.now(), text: desc, done: false }],
+          links: [],
+          notes: ''
+        });
+
+        saveState(true);
+        closeAddTask();
+        renderStudyPlan();
+      });
+
+      // External PDF Form (Tab 2)
+      document.getElementById('external-pdf-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const title = document.getElementById('pdf-title-input').value.trim();
+        const url = document.getElementById('pdf-url-input').value.trim();
+        if (!title || !url) return;
+        state.externalPdfs.unshift({ id: 'pdf-' + Date.now(), title, url });
+        document.getElementById('pdf-title-input').value = '';
+        document.getElementById('pdf-url-input').value = '';
+        saveState(true);
+        renderExternalPdfs();
+      });
+
+      // Library Form (Tab 3)
+      document.getElementById('library-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const subject = document.getElementById('lib-subject').value;
+        const tag = document.getElementById('lib-tag').value;
+        const title = document.getElementById('lib-title').value.trim();
+        const url = document.getElementById('lib-url').value.trim();
+        if (!title || !url) return;
+
+        state.libraryVideos.unshift({
+          id: 'vid-' + Date.now(),
+          subject,
+          tag,
+          title,
+          url,
+          watched: false
+        });
+        document.getElementById('lib-title').value = '';
+        document.getElementById('lib-url').value = '';
+        saveState(true);
+        renderLibrary();
+      });
+
+      // Error Book Form & Export (Tab 4)
+      document.getElementById('error-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const topic = document.getElementById('err-topic').value.trim();
+        const why = document.getElementById('err-why').value.trim();
+        const fix = document.getElementById('err-fix').value.trim();
+        if (!topic || !why || !fix) return;
+
+        const date = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+        state.errorNotes.unshift({ id: 'err-' + Date.now(), topic, why, fix, date });
+        document.getElementById('err-topic').value = '';
+        document.getElementById('err-why').value = '';
+        document.getElementById('err-fix').value = '';
+        saveState(true);
+        renderErrorBook();
+      });
+
+      document.getElementById('export-errors-btn').addEventListener('click', () => {
+        const lines = state.errorNotes.map((e, i) => `${i + 1}. [${e.topic}]\n   Por que errei: ${e.why}\n   Como resolver: ${e.fix}\n`).join('\n');
+        const content = `CADERNO DE ERROS & FÓRMULAS — ENEM 2027 (ENG. CIVIL UFRJ)\n===========================================================\n\n${lines || 'Nenhum registro ainda.'}`;
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'caderno-de-erros-enem2027.txt';
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('Caderno de Erros baixado!');
+      });
+
+      // JSON Backup Export & Import
+      document.getElementById('export-backup-btn').addEventListener('click', () => {
+        const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `backup-enem2027-ufrj-${new Date().toISOString().slice(0, 10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('Backup JSON exportado!');
+      });
+
+      document.getElementById('import-backup-input').addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          try {
+            const imported = JSON.parse(ev.target.result);
+            if (imported && Array.isArray(imported.weeks)) {
+              state = { ...getDefaultState(), ...imported };
+              saveState(true);
+              renderAll();
+              showToast('Backup restaurado com sucesso!');
+            }
+          } catch (err) {
+            showToast('Arquivo de backup inválido.');
+          }
+        };
+        reader.readAsText(file);
+        e.target.value = '';
+      });
+
+      // Reset Modal
+      document.getElementById('open-reset-modal-btn').addEventListener('click', () => {
+        document.getElementById('reset-confirm-modal').classList.remove('hidden');
+        document.getElementById('reset-confirm-modal').classList.add('flex');
+      });
+      document.getElementById('cancel-reset-btn').addEventListener('click', () => {
+        document.getElementById('reset-confirm-modal').classList.add('hidden');
+        document.getElementById('reset-confirm-modal').classList.remove('flex');
+      });
+      document.getElementById('confirm-reset-btn').addEventListener('click', () => {
+        state = getDefaultState();
+        saveState(true);
+        document.getElementById('reset-confirm-modal').classList.add('hidden');
+        document.getElementById('reset-confirm-modal').classList.remove('flex');
+        renderAll();
+      });
+
+      function renderAll() {
+        renderStudyPlan();
+        renderWorksheets();
+        renderLibrary();
+        renderErrorBook();
+        renderUfrjSimulator();
+        switchTab(state.activeTab || 'plano');
+      }
+
+      renderAll();
+    });
+  </script>
+</body>
+</html>
+
+```
